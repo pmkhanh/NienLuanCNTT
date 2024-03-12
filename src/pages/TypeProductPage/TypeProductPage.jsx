@@ -1,24 +1,41 @@
 import React from 'react'
 import NavbarComponent from '../../components/NavbarComponent/NavbarComponent'
 import CardComponent from '../../components/CardComponent/CardComponent'
-import { Col, Row } from 'antd'
+import { Col, Pagination, Row } from 'antd'
+import { WrapperTypeProduct } from './style'
+import { StyleButtonHover } from '../HomePage/style'
 
 
 const TypeProductpage = () => {
     return (
-        < div style = {{ display: 'flex', marginTop: '30px', padding: '0 120px' }} >
+        <div>
+            < div style={{ display: 'flex', marginTop: '30px', padding: '0 120px' }} >
                 <div>
-                    <NavbarComponent/>
+                    <NavbarComponent />
                 </div>
-                <div  >
-                <Row style={{gap: '20px', justifyContent: 'space-around', alignItems: 'center'}} >
-                    <Col span={4}><CardComponent/></Col>
-                    <Col span={4}><CardComponent/></Col>
-                    <Col span={4}><CardComponent/></Col>
-                    <Col span={4}><CardComponent/></Col>
-                </Row>
-                </div>
-        </div > 
+                <WrapperTypeProduct  >
+                    <CardComponent />
+                    <CardComponent />
+                    <CardComponent />
+                    <CardComponent />
+                    <CardComponent />
+                    <CardComponent />
+                    <CardComponent />
+                    <CardComponent />
+                    <CardComponent />
+                    <CardComponent />
+                    <CardComponent />
+                    <CardComponent />
+                    <CardComponent />
+                    <CardComponent />
+                    <CardComponent />
+                    <CardComponent />
+                </WrapperTypeProduct>
+            </div>
+            <div style={{textAlign: 'center', marginTop: '22px'}} >
+            <Pagination defaultCurrent={1} total={100} />;
+            </div>
+        </div>
     )
 }
 
