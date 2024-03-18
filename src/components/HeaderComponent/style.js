@@ -20,7 +20,7 @@ export const WrapperHeaderAccount = styled.div`
     display: flex;
     align-items: center;
     color: #fff;
-    gap: 10px;
+    gap: 40px;
     font-size: 15px;
 `
 export const WrapperHeaderIcon = styled.div`
