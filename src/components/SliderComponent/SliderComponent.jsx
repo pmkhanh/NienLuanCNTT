@@ -18,7 +18,7 @@ const SliderComponent = ({ arrImages }) => {
             <Slider {...settings} >
                 {arrImages.map((image) => {
                     return (
-                        <Image src={image} alt="slider"/>
+                        <Image key={image} src={image} alt="slider"/>
                     )
                 })}
             </Slider>

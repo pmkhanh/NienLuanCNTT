@@ -1,4 +1,3 @@
-import { Input } from 'antd';
 import React, { useState } from 'react'
 import { WrapperInput } from './style';
 

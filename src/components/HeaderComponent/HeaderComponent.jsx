@@ -3,8 +3,14 @@ import { WrapperHeader, WrapperHeaderAccount, WrapperTextHeader, WrapperHeaderIc
 import { Col } from 'antd';
 import { UserOutlined, CaretDownOutlined, ShoppingCartOutlined } from '@ant-design/icons';
 import ButtonInputSearch from '../ButtonInputSearch/ButtonInputSearch';
+import { useNavigate } from 'react-router-dom';
 
 const HeaderComponent = () => {
+    const navigate = useNavigate()
+    const login = () => {
+        navigate('/signin')
+    }
+
     return (
         <div>
             <WrapperHeader>
@@ -21,7 +27,7 @@ const HeaderComponent = () => {
                         <div style={{display: 'flex'}} >
 
                             <UserOutlined style={{ fontSize: '25px' }} />
-                            <div>
+                            <div onClick={login} style={{cursor: 'pointer'}} >
                                 <span>Đăng nhập / Đăng ký</span>
                                 <div>
                                     <span>Tài khoản <CaretDownOutlined /></span>

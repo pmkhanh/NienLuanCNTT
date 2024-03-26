@@ -8,7 +8,7 @@ import {
     PlusOutlined,
     MinusOutlined
 } from '@ant-design/icons'
-import { QuantityBox, StyleButtonCart, StyleButtonHover, WrapperColImg, WrapperImgSmalls, WrapperInfoProduct, WrapperOptionProduct, WrapperPolicyProduct, WrapperPriceNewProduct, WrapperPriceOldProduct, WrapperReportProduct } from './style';
+import { QuantityBox, StyleButtonCart, WrapperColImg, WrapperImgSmalls, WrapperInfoProduct, WrapperOptionProduct, WrapperPolicyProduct, WrapperPriceNewProduct, WrapperPriceOldProduct, WrapperReportProduct } from './style';
 
 const ProductDetailComponent = () => {
     const onChange = {};
@@ -96,7 +96,7 @@ const ProductDetailComponent = () => {
                             </div>
                             <QuantityBox>
                                 <Button  ><MinusOutlined /></Button>
-                                <InputNumber style={{width: '20%'}} variant="outlined" defaultValue={1} onChange={onChange} />
+                                <InputNumber style={{ width: '20%' }} variant="outlined" defaultValue={1} onChange={onChange} />
                                 <Button ><PlusOutlined /></Button>
 
                             </QuantityBox>
@@ -105,7 +105,7 @@ const ProductDetailComponent = () => {
                     <div>
                         <div style={{ textAlign: 'center', justifyContent: 'space-evenly' }} >
                             <StyleButtonCart
-                                icon={<ShoppingCartOutlined style={{fontSize: '1.5rem'}} />}
+                                icon={<ShoppingCartOutlined style={{ fontSize: '1.5rem' }} />}
                                 textButton={" Thêm vào giỏ hàng"} type="outline" styleButton={{
                                     border: '1px solid #f53d2d',
                                     width: 'auto', height: '40px', borderRadius: '5px',

@@ -3,7 +3,7 @@ import styled from "styled-components";
 
 export const WrapperContainer = styled.div`
     width: 810px;
-    height: 525px;
+    height: 570px;
     border: 1px solid red;
     border-radius: 10px;
     background-color: #FFFFFF;
@@ -17,12 +17,21 @@ export const WrapperContainerLeft = styled.div`
 `
 
 export const InputPassword = styled(Input.Password)`
-    width: 450px;
+    background-color: #EEEEEE;
     border-top: none;
     border-right: none;
     border-left: none;
     padding: 10px;
-    margin-top: 10px;
+    height: 3rem;
+`
+
+export const InputUsername = styled(Input)`
+    background-color: #EEEEEE;
+    border-top: none;
+    border-right: none;
+    border-left: none;
+    padding: 10px;
+    height: 3rem;
 `
 
 export const WrapperOr = styled.div`
@@ -38,7 +47,7 @@ export const WrapperTextOr = styled.span`
     text-transform: uppercase;
 `
 
-export const WrapperLogo = styled(Button) `
+export const WrapperLogo = styled(Button)`
     background: #fff;
     font-size: 1rem;
     border: 1px solid rgba(0, 0, 0, .26);
