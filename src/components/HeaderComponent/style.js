@@ -1,5 +1,6 @@
 import { Row } from "antd";
 import styled from "styled-components";
+import Loading from "../LoadingComponent/Loading";
 
 export const WrapperHeader = styled(Row)`
     padding: 20px 120px;
@@ -22,12 +23,28 @@ export const WrapperHeaderAccount = styled.div`
     color: #fff;
     gap: 40px;
     font-size: 15px;
+    justify-content:center;
 `
 export const WrapperHeaderIcon = styled.div`
     color: #fff;
     font-size: 30px;
     align-items: center;
-    padding-left: 9px;
+    padding: 9px;
+    margin-left: 27px;
 `
 
+export const WrapperContentPopover = styled.p`
+    cursor: pointer;
+    font-size: 1.05rem;
+    &:hover {
+        color: #15F5BA;
+    }
+`
 
+export const WrapperAccount = styled.div`
+    text-align: center;
+    justify-content: center;
+    align-items: center;
+    display: flex;
+}
+`

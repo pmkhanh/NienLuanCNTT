@@ -15,6 +15,7 @@ const ButtonInputSearch = (props) => {
     return (
         <div style={{display: 'flex'}} >
             <Input 
+                allowClear
                 size={size} 
                 placeholder={placeholder} 
                 style={{backgroundColor: "#fff", borderRadius: '2px'}}

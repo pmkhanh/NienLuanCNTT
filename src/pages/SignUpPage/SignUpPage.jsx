@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { InputPassword, InputUsername, WrapperContainer, WrapperContainerLeft, WrapperContainerRight, WrapperLogo, WrapperOr, WrapperTextOr } from './style';
 import InputFormComponent from '../../components/InputFormComponent/InputFormComponent';
 import ButtonComponent from '../../components/ButtonComponent/ButtonComponent';
@@ -6,7 +6,11 @@ import logoSignIn from '../../assets/images/logo_signin.png'
 import logfb from '../../assets/images/logo_fb.png'
 import logogg from '../../assets/images/logo_gg.png'
 import { useNavigate } from 'react-router-dom';
-import { Form, Checkbox } from 'antd';
+import { Form, Checkbox, message } from 'antd';
+import * as UserService from '../../Services/UserService'
+import { useMutationHook } from '../../hooks/UseMutation';
+import Loading from '../../components/LoadingComponent/Loading';
+import * as Messsage from '../../components/MessageComponent/MessageComponent'
 
 const SignUpPage = () => {
     const navigate = useNavigate()
@@ -14,28 +18,46 @@ const SignUpPage = () => {
         navigate('/signin')
     }
 
+    const mutation = useMutationHook(
+        data => UserService.signUpUser(data)
+    )
+    const { data, isPending, isSuccess, isError } = mutation
     const handleSignUp = () => {
-        console.log("sign up", username, password, conPassword)
+        mutation.mutate({
+            username,
+            password,
+            confirmpassword,
+            phone
+        })
     }
+    useEffect(() => {
+        if (isSuccess) {
+            message.success("Đăng ký tài khoản thành công!")
+            signIn()
+        }
+        if (isError) {
+            message.error("Có lỗi xảy ra, hãy kiểm tra và thử lại sau!")
+        }
 
+    }, [isSuccess, isError])
+    console.log("mutation", mutation)
     const [username, setUsername] = useState('')
+    const [phone, setPhone] = useState('')
     const [password, setPassword] = useState('')
-    const [conPassword, setConPassword] = useState('')
+    const [confirmpassword, setconfirmpassword] = useState('')
 
-    const onFinish = (values) => {
-        console.log('Success:', values);
-    };
-    const onFinishFailed = (errorInfo) => {
-        console.log('Failed:', errorInfo);
-    };
+
     const onChangeUsername = (e) => {
         setUsername(e.target.value)
+    }
+    const onChangePhone = (e) => {
+        setPhone(e.target.value)
     }
     const onChangePassword = (e) => {
         setPassword(e.target.value)
     }
     const onChangeConPass = (e) => {
-        setConPassword(e.target.value)
+        setconfirmpassword(e.target.value)
     }
     return (
         <div>
@@ -48,8 +70,6 @@ const SignUpPage = () => {
                             initialValues={{
                                 remember: true,
                             }}
-                            onFinish={onFinish}
-                            onFinishFailed={onFinishFailed}
                             autoComplete="off"
                         >
                             <Form.Item
@@ -66,7 +86,20 @@ const SignUpPage = () => {
                             >
                                 <InputUsername type='text' value={username} onChange={onChangeUsername} allowClear placeholder="Tên tài khoản" style={{ marginBottom: '10px' }} />
                             </Form.Item>
-
+                            <Form.Item
+                                name="phone"
+                                hasFeedback
+                                rules={[
+                                    {
+                                        min: 10,
+                                        max: 10,
+                                        required: true,
+                                        message: 'Vui lòng nhập số điện thoại',
+                                    },
+                                ]}
+                            >
+                                <InputUsername type='text' value={phone} onChange={onChangePhone} allowClear placeholder="Số điệnt thoại" style={{ marginBottom: '10px' }} />
+                            </Form.Item>
                             <Form.Item
                                 name="password"
                                 hasFeedback
@@ -100,25 +133,30 @@ const SignUpPage = () => {
                                     }),
                                 ]}
                             >
-                                <InputPassword type='text' value={conPassword} onChange={onChangeConPass} allowClear placeholder="Nhập lại mật khẩu" />
+                                <InputPassword type='text' value={confirmpassword} onChange={onChangeConPass} allowClear placeholder="Nhập lại mật khẩu" />
                             </Form.Item>
 
                             <Form.Item
                                 style={{ textAlign: 'center' }}
                             >
-                                <ButtonComponent textButton={'Đăng Ký'}
-                                    styleButton={{
-                                        backgroundColor: '#ee4d2d',
-                                        color: '#fff',
-                                        width: '300px',
-                                        height: '40px',
-                                        fontSize: '1.25rem',
+                                {/* console.log({data?.message}) */}
+                                {data?.status === 'ERR' && <span style={{ color: 'red' }} >{data?.message}</span>}
+                                <Loading isPending={isPending}>
 
-                                    }}
-                                    htmlType="submit"
-                                    onClick={handleSignUp}
-                                    disabled={!username.length || !password.length || !conPassword.length}
-                                />
+                                    <ButtonComponent textButton={'Đăng Ký'}
+                                        styleButton={{
+                                            backgroundColor: '#ee4d2d',
+                                            color: '#fff',
+                                            width: '300px',
+                                            height: '40px',
+                                            fontSize: '1.25rem',
+
+                                        }}
+                                        htmlType="submit"
+                                        onClick={handleSignUp}
+                                        disabled={!username.length || !password.length || !confirmpassword.length}
+                                    />
+                                </Loading>
                             </Form.Item>
 
                         </Form>

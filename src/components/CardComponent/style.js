@@ -25,7 +25,6 @@ export const WrapperCardStyle = styled(Card)`
     },
     position: relative;
     border-radius: 5px;
-    border: 1px solid grey;
 `
 export const StyleStateProuct = styled.span`
 text-align: center;

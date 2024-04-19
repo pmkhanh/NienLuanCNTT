@@ -3,11 +3,12 @@ import styled from "styled-components";
 
 export const WrapperContainer = styled.div`
     width: 810px;
-    height: 570px;
+    height: auto;
     border: 1px solid red;
     border-radius: 10px;
     background-color: #FFFFFF;
     display: flex;
+    overflow: hidden;
 `
 
 export const WrapperContainerLeft = styled.div`
