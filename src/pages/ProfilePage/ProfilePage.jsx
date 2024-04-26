@@ -20,11 +20,8 @@ const ProfilePage = () => {
     const [name, setName] = useState(user?.name)
     const [address, setAddress] = useState(user?.address)
     const [phone, setPhone] = useState(user.phone)
-    const [date, setDate] = useState()
-    const [Gender, setGender] = useState(user?.gender);
     const [avatar, setAvatar] = useState(user?.avatar);
     const [pending, setPending] = useState(false)
-    const dateFormat = 'DD/MM/YYYY';
     const mutation = useMutationHook(
         (data) => {
             const { id, access_token, ...rests } = data
@@ -49,10 +46,9 @@ const ProfilePage = () => {
         disPath(updateUser({ ...res?.data, access_token: token }))
     }
 
-    const onChangeDate = (date, dateString) => {
-    };
+
     const handleUpdateUser = (e) => {
-        mutation.mutate({ id: user?.id, name, email, phone, address, date, Gender, avatar, access_token: user?.access_token })
+        mutation.mutate({ id: user?.id, name, email, phone, address, avatar, access_token: user?.access_token })
     }
     const onChangeName = (e) => {
         setName(e.target.value)
@@ -66,14 +62,7 @@ const ProfilePage = () => {
     const onChangeAddress = (e) => {
         setAddress(e.target.value)
     }
-    const handelDateChangle = (e) => {
-        const newDate = new Date(e.target.value);
-        setDate(newDate)
-    }
-    const onChangeGender = (value) => {
-        setGender(value)
 
-    }
     const onChangeAvatar = async ({ fileList }) => {
         const file = fileList[0]
         if (!file.url && !file.preview) {
@@ -85,9 +74,7 @@ const ProfilePage = () => {
         setEmail(user?.email)
         setAddress(user?.address)
         setPhone(user?.phone)
-        setDate(user?.date)
         setName(user?.name)
-        setGender(user?.gender)
         setUsername(user?.username)
         setAvatar(user?.avatar)
     }, [user])
@@ -196,48 +183,9 @@ const ProfilePage = () => {
                                                 Giới tính
                                             </WrapperLabel>
                                         </WrapperTableTdLabel>
-                                        <WrapperTableTdInput style={{ textAlign: 'left' }}>
-                                            <Select
-                                                defaultValue={Gender}
-                                                name="Gender"
-                                                value={Gender}
-                                                style={{
-                                                    width: 200,
-                                                }}
-                                                onChange={onChangeGender}
-                                                options={[
-                                                    {
-                                                        label: <span>Nam</span>,
-                                                        value: 'Nam',
-                                                    },
-                                                    {
-                                                        label: <span>Nữ</span>,
-                                                        value: 'Nữ',
 
-                                                    },
-                                                    {
-                                                        label: <span>Khác</span>,
-                                                        value: 'Khác',
-
-                                                    },
-                                                ]}
-                                            />
-
-                                        </WrapperTableTdInput>
                                     </WrapperTableTr>
-                                    <WrapperTableTr>
-                                        <WrapperTableTdLabel>
-                                            <WrapperLabel htmlFor="">
-                                                Ngày sinh
-                                            </WrapperLabel>
-                                        </WrapperTableTdLabel>
-                                        <WrapperTableTdInput type="date" style={{ textAlign: 'left' }}>
-                                            <Space direction="vertical">
-                                                <DatePicker onChange={handelDateChangle} />
 
-                                            </Space>
-                                        </WrapperTableTdInput>
-                                    </WrapperTableTr>
 
                                 </table>
                                 <WrapperDivImage >
