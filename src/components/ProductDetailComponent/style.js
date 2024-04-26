@@ -1,4 +1,4 @@
-import { Col, Image, Row } from "antd";
+import { Col, Image, InputNumber, Row } from "antd";
 import styled from "styled-components";
 import ButtonComponent from "../../components/ButtonComponent/ButtonComponent";
 
@@ -34,9 +34,9 @@ export const WrapperPriceOldProduct = styled.span`
 
 export const WrapperPriceNewProduct = styled.span`
     color: #ee4d2d;
-    font-size: 1.875rem;
+    font-size: 1.675rem;
     font-weight: 500;
-    margin-left: 10px;
+    margin-left: 30px;
 `
 
 export const WrapperPolicyProduct = styled.div`
@@ -68,7 +68,19 @@ export const StyleButtonCart = styled(ButtonComponent)`
 
 export const QuantityBox = styled.div`
     color: #757575;
-    display: flex;
     margin-left: 23px;
     gap: 10px;
+    display: flex;
+    align-items: center;
+`
+export const WrapperInputNumber =styled(InputNumber)`
+    &.ant-input-number-input-wrap  {
+        &.ant-input-number-handler ant-input-number-handler-up{
+            display: none !important;
+        }
+        display: none !important;
+    };
+    &.ant-input-number-input{
+        display: none;
+    }
 `

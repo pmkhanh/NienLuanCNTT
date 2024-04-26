@@ -1,5 +1,5 @@
 import { CaretDownOutlined, ShoppingCartOutlined, UserOutlined } from '@ant-design/icons';
-import { Col, Popover } from 'antd';
+import { Badge, Col, Popover } from 'antd';
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
@@ -8,14 +8,18 @@ import { resetUser } from '../../redux/sliders/userSlide';
 import ButtonInputSearch from '../ButtonInputSearch/ButtonInputSearch';
 import Loading from '../LoadingComponent/Loading';
 import { WrapperAccount, WrapperContentPopover, WrapperHeader, WrapperHeaderAccount, WrapperHeaderIcon, WrapperTextHeader } from './style';
+import { searchProduct } from '../../redux/sliders/productSlide';
+import logo from '../../assets/images/logo.png'
 
 const HeaderComponent = ({ isHiddenSearch = false, isHiddenCart = false }) => {
     const navigate = useNavigate()
     const dispatch = useDispatch()
-    const user = useSelector((state) => state.user)
+    const user = useSelector((state) => state?.user)
+    const order = useSelector((state) => state?.order);
     const [peding, setPending] = useState(false)
     const [name, setName] = useState('')
     const [avatar, setAvatar] = useState('')
+    const [search, setSearch] = useState('');
     const homePage = () => {
         navigate('/')
     }
@@ -23,7 +27,12 @@ const HeaderComponent = ({ isHiddenSearch = false, isHiddenCart = false }) => {
         navigate('/profileuser')
     }
     const getOrder = () => {
-        navigate('')
+        navigate('/myorder', {
+            state: {
+                id: user?.id,
+                access_token: user?.access_token
+            }
+        })
     }
     const system = () => {
         navigate('/system/admin')
@@ -51,18 +60,29 @@ const HeaderComponent = ({ isHiddenSearch = false, isHiddenCart = false }) => {
     const login = () => {
         navigate('/signin')
     }
-    // console.log("user", user)
+
+    const searchText = (e) => {
+        setSearch(e.target.value)
+        dispatch(searchProduct(e.target.value))
+    }
+
     return (
         <div >
-            <WrapperHeader style={{justifyContent: isHiddenCart && isHiddenSearch ? 'space-between' : 'unset'}}>
-                <Col span={5} ><WrapperTextHeader onClick={homePage} style={{ cursor: 'pointer' }} > Shop bán hàng</WrapperTextHeader> </Col>
+            <WrapperHeader style={{ justifyContent: isHiddenCart && isHiddenSearch ? 'space-between' : 'unset' }}>
+                <Col span={5} >
+                    <WrapperTextHeader onClick={homePage} style={{ cursor: 'pointer' }} >
+                        <img style={{borderRadius: '50%', marginRight: '4px'}} width={'20%'} src={logo} alt="Logo" />
+                        MK Shop
+                    </WrapperTextHeader>
+                </Col>
                 {!isHiddenSearch && <Col style={{ gap: '10px', paddingRight: '10px' }} span={13}>
                     <ButtonInputSearch
                         size="large"
                         placeholder="Bạn tìm gì hôm nay ?"
                         textButton="Tìm kiếm"
-                        //  onSearch={onSearch}
-                        enterButton />
+                        enterButton
+                        onChange={searchText}
+                    />
                 </Col>}
 
                 <Col span={6} style={{ display: 'flex' }}>
@@ -94,9 +114,16 @@ const HeaderComponent = ({ isHiddenSearch = false, isHiddenCart = false }) => {
                             </WrapperHeaderAccount>
                         </Loading>
                     </WrapperAccount>
-                    {!isHiddenCart && <WrapperHeaderIcon>
-                        <ShoppingCartOutlined />
-                    </WrapperHeaderIcon>}
+                    {!isHiddenCart && (
+                        <div onClick={() => navigate('/order')} style={{ cursor: 'pointer' }} >
+
+                            <WrapperHeaderIcon>
+                                <Badge count={order?.orderItems?.length} size='small' >
+                                    <ShoppingCartOutlined style={{ fontSize: '30px', color: '#fff' }} />
+                                </Badge>
+                            </WrapperHeaderIcon>
+                        </div>
+                    )}
 
                 </Col>
             </WrapperHeader>

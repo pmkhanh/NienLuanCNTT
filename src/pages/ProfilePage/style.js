@@ -50,7 +50,7 @@ export const WrapperTablediv = styled.div`
     box-shadow: inset 0 2px 0 rgba(0,0,0,.02);
     box-sizing: border-box;
     display: flex; 
-    height: 40px;
+    height: 50px;
     overflow: hidden;
     width: 90%;
     font-size: 1.1rem;

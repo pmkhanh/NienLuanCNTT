@@ -1,13 +1,13 @@
-import React from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom';
 
-const TypeProduct = ({name}) => {
+const TypeProduct = ({ name }) => {
     const navigate = useNavigate()
-    const typeProduct=() => {
-        navigate('/typeproduct')
-    }
+    const navigateType = (type) => {
+        // .normalize : bo di dau tieng viet
+        navigate(`/product/${type.normalize('NFD').replace(/[\u0300-\u036f]/g, '')?.replace(/ /g, '_')}`, {state: type})
+      }
     return (
-        <div onClick={typeProduct} style={{cursor: 'pointer'}}>
+        <div onClick={() => navigateType(name)} style={{cursor: 'pointer'}}>
             {name}
         </div>
     )

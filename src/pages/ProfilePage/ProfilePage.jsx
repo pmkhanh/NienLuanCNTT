@@ -1,16 +1,15 @@
 'use client'
-import React, { useEffect } from 'react'
-import { WrapperAvatar, WrapperCategory, WrapperContainerImage, WrapperContainerProfile, WrapperContentProfile, WrapperDivImage, WrapperDivLeft, WrapperHeaderProfile, WrapperImage, WrapperInput, WrapperLabel, WrapperListStyle, WrapperTableTdInput, WrapperTableTdLabel, WrapperTableTr, WrapperTablediv, WrapperUploadFile } from './style';
-import { Button, Col, DatePicker, Image, Radio, Row, Space, Upload, message } from 'antd';
-import { useState } from 'react';
-import ButtonComponent from '../../components/ButtonComponent/ButtonComponent';
+import { BellOutlined, InfoOutlined, ProfileOutlined, UploadOutlined, UserOutlined } from '@ant-design/icons';
+import { Button, Col, DatePicker, Row, Select, Space, message } from 'antd';
+import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import * as UserService from '../../Services/UserService'
+import { useNavigate } from 'react-router-dom';
+import * as UserService from '../../Services/UserService';
+import ButtonComponent from '../../components/ButtonComponent/ButtonComponent';
 import { useMutationHook } from '../../hooks/UseMutation';
 import { updateUser } from '../../redux/sliders/userSlide';
-import { UploadOutlined, UserOutlined, ProfileOutlined, BellOutlined, InfoOutlined } from '@ant-design/icons'
 import { getBase64 } from '../../utils';
-import { useNavigate } from 'react-router-dom';
+import { WrapperAvatar, WrapperCategory, WrapperContainerImage, WrapperContainerProfile, WrapperContentProfile, WrapperDivImage, WrapperDivLeft, WrapperHeaderProfile, WrapperImage, WrapperInput, WrapperLabel, WrapperListStyle, WrapperTableTdInput, WrapperTableTdLabel, WrapperTableTr, WrapperTablediv, WrapperUploadFile } from './style';
 
 const ProfilePage = () => {
     const disPath = useDispatch()
@@ -21,7 +20,7 @@ const ProfilePage = () => {
     const [name, setName] = useState(user?.name)
     const [address, setAddress] = useState(user?.address)
     const [phone, setPhone] = useState(user.phone)
-    const [date, setDate] = useState(new Date())
+    const [date, setDate] = useState()
     const [Gender, setGender] = useState(user?.gender);
     const [avatar, setAvatar] = useState(user?.avatar);
     const [pending, setPending] = useState(false)
@@ -32,9 +31,7 @@ const ProfilePage = () => {
             UserService.updateUser(id, data, access_token)
         }
     )
-    const GenderDefault = useState(user?.gender)
     const { data, isSuccess, isError } = mutation
-    // console.log("data", data)
     useEffect(() => {
         if (isSuccess) {
             setPending(true)
@@ -51,15 +48,10 @@ const ProfilePage = () => {
         const res = await UserService.getDetailUser(idUser, token)
         disPath(updateUser({ ...res?.data, access_token: token }))
     }
-    const selectGender = (e) => {
-        setGender(e.target.value)
-    }
+
     const onChangeDate = (date, dateString) => {
-        // console.log("date",date, dateString)
     };
     const handleUpdateUser = (e) => {
-        // console.log("update", name, email, phone, address, date, avatar, Gender)
-        console.log("gender", Gender)
         mutation.mutate({ id: user?.id, name, email, phone, address, date, Gender, avatar, access_token: user?.access_token })
     }
     const onChangeName = (e) => {
@@ -73,6 +65,14 @@ const ProfilePage = () => {
     }
     const onChangeAddress = (e) => {
         setAddress(e.target.value)
+    }
+    const handelDateChangle = (e) => {
+        const newDate = new Date(e.target.value);
+        setDate(newDate)
+    }
+    const onChangeGender = (value) => {
+        setGender(value)
+
     }
     const onChangeAvatar = async ({ fileList }) => {
         const file = fileList[0]
@@ -94,7 +94,9 @@ const ProfilePage = () => {
     const profileUser = () => {
         navigate('/profileuser')
     }
-    console.log(mutation)
+    const getOrder = () => {
+        navigate('/myorder')
+    }
     return (
         <div style={{ backgroundColor: '#cccc' }}>
 
@@ -116,7 +118,7 @@ const ProfilePage = () => {
                                 <WrapperListStyle>Đổi mật khẩu</WrapperListStyle>
                                 <WrapperListStyle>Cài đặt thông báo</WrapperListStyle>
                             </ul>
-                            <WrapperCategory><ProfileOutlined style={{ color: 'blue' }} /> Đơn mua</WrapperCategory>
+                            <WrapperCategory onClick={getOrder} ><ProfileOutlined style={{ color: 'blue' }} /> Đơn mua</WrapperCategory>
                             <WrapperCategory><BellOutlined style={{ color: 'red' }} /> Thông báo</WrapperCategory>
                             <WrapperCategory><InfoOutlined style={{ color: 'green' }} /> Thông tin</WrapperCategory>
                         </WrapperDivLeft>
@@ -195,18 +197,32 @@ const ProfilePage = () => {
                                             </WrapperLabel>
                                         </WrapperTableTdLabel>
                                         <WrapperTableTdInput style={{ textAlign: 'left' }}>
-                                            <div>
-                                                <input type="radio" name='gender' value="nam" />
-                                                <span>nam</span>
-                                            </div>
-                                            <div>
-                                                <input type="radio" name='gender' value="nu" />
-                                                <span>nu</span>
-                                            </div>
-                                            <div>
-                                                <input type="radio" name='gender' value="other" />
-                                                <span>khac</span>
-                                            </div>
+                                            <Select
+                                                defaultValue={Gender}
+                                                name="Gender"
+                                                value={Gender}
+                                                style={{
+                                                    width: 200,
+                                                }}
+                                                onChange={onChangeGender}
+                                                options={[
+                                                    {
+                                                        label: <span>Nam</span>,
+                                                        value: 'Nam',
+                                                    },
+                                                    {
+                                                        label: <span>Nữ</span>,
+                                                        value: 'Nữ',
+
+                                                    },
+                                                    {
+                                                        label: <span>Khác</span>,
+                                                        value: 'Khác',
+
+                                                    },
+                                                ]}
+                                            />
+
                                         </WrapperTableTdInput>
                                     </WrapperTableTr>
                                     <WrapperTableTr>
@@ -215,9 +231,10 @@ const ProfilePage = () => {
                                                 Ngày sinh
                                             </WrapperLabel>
                                         </WrapperTableTdLabel>
-                                        <WrapperTableTdInput style={{ textAlign: 'left' }}>
+                                        <WrapperTableTdInput type="date" style={{ textAlign: 'left' }}>
                                             <Space direction="vertical">
-                                                <DatePicker onChange={setDate} format={dateFormat} />
+                                                <DatePicker onChange={handelDateChangle} />
+
                                             </Space>
                                         </WrapperTableTdInput>
                                     </WrapperTableTr>

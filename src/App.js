@@ -13,8 +13,8 @@ import Loading from './components/LoadingComponent/Loading';
 
 
 function App() {
-  const disPath = useDispatch()
-  const user = useSelector((state) => state.user)
+  const dispatch = useDispatch()
+  const user = useSelector((state) => state?.user)
   const [isPending, setIsPeding] = useState(false)
   useEffect(async () => {
     setIsPeding(true)
@@ -53,8 +53,8 @@ function App() {
   )
 
   const handleGetDetailUser = async (idUser, token) => {
-    const res = await UserService.getDetailUser(idUser, token)
-    disPath(updateUser({ ...res?.data, access_token: token }))
+      const res = await UserService.getDetailUser(idUser, token)
+      dispatch(updateUser({ ...res?.data, access_token: token }))
   }
 
 

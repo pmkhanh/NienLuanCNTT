@@ -27,11 +27,21 @@ export const WrapperCardStyle = styled(Card)`
     border-radius: 5px;
 `
 export const StyleStateProuct = styled.span`
-text-align: center;
-margin: 5px 0;
-color: rgba(238, 77, 45);
-border: 1px groove red;
-width: 95px;
-line-height: 1rem;
-font-size: 0.65rem;
+    text-align: center;
+    margin: 5px 0;
+    color: rgba(238, 77, 45);
+    border: 1px groove red;
+    width: 95px;
+    line-height: 1rem;
+    font-size: 0.65rem;
+`
+export const WrapperHoverCard = styled.div`
+    &:hover {
+        border: 1px solid #B73E3E;
+        border-radius: 10px;
+    };
+    
+    overflow: hidden;
+    box-shadow: 6px 7px 5px #F0EBE3;
+
 `

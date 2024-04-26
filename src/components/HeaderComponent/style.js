@@ -26,8 +26,6 @@ export const WrapperHeaderAccount = styled.div`
     justify-content:center;
 `
 export const WrapperHeaderIcon = styled.div`
-    color: #fff;
-    font-size: 30px;
     align-items: center;
     padding: 9px;
     margin-left: 27px;

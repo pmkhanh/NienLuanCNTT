@@ -1,25 +1,37 @@
 import { Table } from 'antd';
-import React, { useState } from 'react';
+import React, { useMemo, useRef, useState } from 'react';
+import { Excel } from "antd-table-saveas-excel";
 import Loading from '../LoadingComponent/Loading';
 
 const TableComponent = (props) => {
     const { selectionType = 'checkbox', columns = [], data = [], isPending = false, handleDeleteMany } = props;
     const [rowSelectedKey, setRowSelectedKey] = useState([]);
+    const tableRef = useRef(null);
     const rowSelection = {
-        onChange: (selectedRowKeys, selectedRows) => {
-            // console.log(`selectedRowKeys: ${selectedRowKeys}`, 'selectedRows: ', selectedRows);
+        onChange: (selectedRowKeys) => {
             setRowSelectedKey(selectedRowKeys)
         },
-        // getCheckboxProps: (record) => ({
-        //     disabled: record.name === 'Disabled User',
-        //     // Column configuration not to be checked
-        //     name: record.name,
-        // }),
+
     };
 
-    const handleDeleteProducts = () => {
+    const handleDeleteAll = () => {
         handleDeleteMany(rowSelectedKey)
     }
+
+    const columnExport = useMemo(() => {
+        const arr = columns?.filter((col) => col.dataIndex !== 'action')
+        return arr;
+    }, [columns])
+    const exportExcel = () => {
+        const excel = new Excel();
+        excel
+            .addSheet("test")
+            .addColumns(columnExport)
+            .addDataSource(data, {
+                str2Percent: true
+            })
+            .saveAs("Excel.xlsx");
+    };
 
     return (
         <Loading isPending={isPending}>
@@ -29,7 +41,7 @@ const TableComponent = (props) => {
                         display: 'flex',
                         justifyContent: 'center',
                         justifyItems: 'center',
-                        width: '100px',
+                        width: '120px',
                         height: '30px',
                         alignItems: 'center',
                         cursor: 'pointer',
@@ -37,13 +49,15 @@ const TableComponent = (props) => {
                         borderRadius: '5px',
                         marginBottom: '10px'
                     }}
-                    onClick={handleDeleteProducts}
+                    onClick={handleDeleteAll}
                 >
-                    Xóa đã chọn
+                    Xóa đã chọn  {rowSelectedKey.length}
                 </div>
-            )}
 
+            )}
+            <button onClick={exportExcel} > Export Excel</button>
             <Table
+                ref={tableRef}
                 rowSelection={{
                     type: selectionType,
                     ...rowSelection,

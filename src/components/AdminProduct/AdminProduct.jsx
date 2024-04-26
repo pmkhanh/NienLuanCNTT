@@ -1,16 +1,17 @@
 import { DeleteOutlined, EditOutlined, PlusOutlined, SearchOutlined } from '@ant-design/icons';
 import { useQuery } from '@tanstack/react-query';
-import { Button, Form, Input, Space, message } from 'antd';
+import { Button, Form, Input, Select, Space, message } from 'antd';
 import React, { useEffect, useRef, useState } from 'react';
 import { useSelector } from 'react-redux';
 import * as ProductService from '../../Services/ProductService';
 import { useMutationHook } from '../../hooks/UseMutation';
-import { getBase64 } from '../../utils';
+import { getBase64, renderOptions } from '../../utils';
 import DrawerComponent from '../DrawerComponent/DrawerComponent';
 import Loading from '../LoadingComponent/Loading';
 import ModalComponent from '../ModalComponent/ModalComponent';
 import TableComponent from '../Table/TableComponent';
 import { WrapperButton, WrapperHeader, WrapperUploadFile } from './style';
+import TextArea from 'antd/es/input/TextArea';
 
 const AdminProduct = () => {
     const [isModalOpen, setIsModalOpen] = useState(false);
@@ -20,6 +21,8 @@ const AdminProduct = () => {
     const [isModalOpenDelete, setIsModalOpenDelete] = useState(false)
     const [searchText, setSearchText] = useState('');
     const [searchedColumn, setSearchedColumn] = useState('');
+    const [typeProduct, setTypeProduct] = useState('');
+    const [selectType, setSelectType] = useState('');
     const searchInput = useRef(null);
     const user = useSelector((state) => state?.user)
     const [stateProduct, setStateProduct] = useState({
@@ -31,6 +34,7 @@ const AdminProduct = () => {
         rating: '',
         status: '',
         image: '',
+        newType: '',
     });
     const [stateProductDetail, setStateProductDetail] = useState({
         name: '',
@@ -72,12 +76,9 @@ const AdminProduct = () => {
     const { isPending: isPendingProduct, data: products } = queryProduct
     const handleSearch = (selectedKeys, confirm, dataIndex) => {
         confirm();
-        // setSearchText(selectedKeys[0]);
-        // setSearchedColumn(dataIndex);
     };
     const handleReset = (clearFilters) => {
         clearFilters();
-        // setSearchText('');
     };
     const getColumnSearchProps = (dataIndex) => ({
         filterDropdown: ({ setSelectedKeys, selectedKeys, confirm, clearFilters }) => (
@@ -129,20 +130,6 @@ const AdminProduct = () => {
                 setTimeout(() => searchInput.current?.select(), 100);
             }
         },
-        // render: (text) =>
-        // searchedColumn === dataIndex ? (
-        //     // <Highlighter
-        //     //     highlightStyle={{
-        //     //         backgroundColor: '#ffc069',
-        //     //         padding: 0,
-        //     //     }}
-        //     //     searchWords={[searchText]}
-        //     //     autoEscape
-        //     //     textToHighlight={text ? text.toString() : ''}
-        //     // />
-        // ) : (
-        //     text
-        // ),
     })
     const columns = [
         {
@@ -165,7 +152,6 @@ const AdminProduct = () => {
                 },
             ],
             onFilter: (value, record) => {
-                // console.log('value', {value, record})
                 return record.type.indexOf(value) === 0;
             },
         },
@@ -198,7 +184,6 @@ const AdminProduct = () => {
                 },
             ],
             onFilter: (value, record) => {
-                // console.log('value', {value, record})
                 return record.status.indexOf(value) === 0;
             },
         },
@@ -266,7 +251,17 @@ const AdminProduct = () => {
         form.resetFields()
     };
     const onFinish = () => {
-        mutation.mutate(stateProduct, {
+        const params = {
+            name: stateProduct.name,
+            type: stateProduct.type === 'add_type' ? stateProduct.newType : stateProduct.type,
+            countInStock: stateProduct.countInStock,
+            price: stateProduct.price,
+            description: stateProduct.description,
+            rating: stateProduct.rating,
+            status: stateProduct.status,
+            image: stateProduct.image,
+        }
+        mutation.mutate(params, {
             onSettled: () => {
                 queryProduct.refetch()
             }
@@ -320,8 +315,10 @@ const AdminProduct = () => {
     const { data: dataUpdated, isPending: isPendingUpdated, isSuccess: isSuccessUpdated, isError: isErrorUpdated } = mutationUpdate
 
     useEffect(() => {
-        form.setFieldValue(stateProductDetail)
-    }, [form, stateProductDetail])
+        if (!isModalOpen) {
+            form.setFieldValue(stateProductDetail)
+        }
+    }, [form, stateProductDetail, isModalOpen])
 
     useEffect(() => {
         if (rowSelected != null) {
@@ -368,13 +365,12 @@ const AdminProduct = () => {
         form.resetFields()
     };
     const handleChangeDetail = (e) => {
-        console.log('check', e.target.name, e.target.value)
+
         setStateProductDetail({
             ...stateProductDetail, [e.target.name]: e.target.value
         });
     }
     const handleEdit = () => {
-        // console.log('rowselected', rowSelected)
         if (rowSelected != null) {
             setIsPendingUpdate(true)
             fetchDetailProduct()
@@ -392,7 +388,6 @@ const AdminProduct = () => {
         })
     }
     const onUpdateProduct = async () => {
-        // console.log("token_user", user.access_token)
         mutationUpdate.mutate({ id: rowSelected, token: user?.access_token, ...stateProductDetail }, {
             onSettled: () => {
                 queryProduct.refetch()
@@ -453,8 +448,8 @@ const AdminProduct = () => {
     const mutationDeleteMany = useMutationHook(
         (data) => {
             const {
-                ids,
                 token,
+                ...ids
             } = data
             const res = ProductService.deleteMany(
                 ids,
@@ -463,15 +458,45 @@ const AdminProduct = () => {
             return res
         },
     )
-    console.log('many', mutationDeleteMany)
-    const { data: dataDeleteMany, isPending: isPendingDeleteMany, isSuccess: isSuccessDeleteMay, isError: isErrorDeleteMany } = mutationDeleteMany
+    const { data: dataDeleteMany, isPending: isPendingDeleteMany, isSuccess: isSuccessDeleteMany, isError: isErrorDeleteMany } = mutationDeleteMany
 
-    const handleDeleteMany = (_id) => {
-        console.log('_id', {_id})
-        // mutationDeleteMany.mutate()
+    const handleDeleteManyProducts = (ids) => {
+        mutationDeleteMany.mutate()
+        mutationDeleteMany.mutate({ ids: ids, token: user?.access_token }, {
+            onSettled: () => {
+                queryProduct.refetch()
+            }
+        })
     }
+    useEffect(() => {
+        if (isSuccessDeleteMany && dataDeleteMany?.status === 'OK') {
+            message.success("Xóa sản phẩm thành công!")
+            handleCancelDelete()
+        }
+        if (dataDeleteMany?.status === 'ERR') {
+            message.error('Có lỗi xảy ra, kiểm tra lại dữ liệu')
+        }
+    }, [isSuccessDeleteMany, isErrorDeleteMany])
 
+    // Loại sản phẩm
+    const fetchProductType = async () => {
+        const res = await ProductService.getAllProductType();
+        if (res?.status === 'OK') {
+            setTypeProduct(res?.data)
+        }
+        return res;
+    }
+    const handleSelectType = (value) => {
+        if (value !== ' add_type') {
+            setStateProduct({
+                ...stateProduct,
+                type: value
+            })
+        }
+        setSelectType(value)
 
+    }
+    const queryProductType = useQuery({ queryKey: 'types', queryFn: fetchProductType })
 
     return (
         <div style={{ width: '100%' }}>
@@ -481,7 +506,7 @@ const AdminProduct = () => {
             </div>
             <div style={{ marginTop: '15px' }} >
                 <TableComponent
-                    handleDeleteMany={handleDeleteMany}
+                    handleDeleteMany={handleDeleteManyProducts}
                     columns={columns}
                     isPending={isPendingProduct}
                     data={dataTable}
@@ -512,7 +537,7 @@ const AdminProduct = () => {
                                 remember: true,
                             }}
                             onFinish={onFinish}
-                            onFinishFailed={onFinishFailed}
+                            // onFinishFailed={onFinishFailed}
                             autoComplete="off"
                             form={form}
                         >
@@ -540,7 +565,18 @@ const AdminProduct = () => {
                                     },
                                 ]}
                             >
-                                <Input value={stateProduct.type} onChange={handleChange} name='type' />
+                                <Select
+                                    name="type"
+                                    showSearch
+                                    value={stateProduct.type}
+                                    placeholder="Loại sản phẩm"
+                                    onChange={handleSelectType}
+                                    options={renderOptions(queryProductType?.data?.data)}
+                                />
+                                {selectType === 'add_type' && (
+                                    <Input style={{ marginTop: '5px' }} value={stateProduct.newType} onChange={handleChange} name='newType' />
+
+                                )}
                             </Form.Item>
                             <Form.Item
                                 label="Số lượng"
@@ -552,7 +588,7 @@ const AdminProduct = () => {
                                     },
                                 ]}
                             >
-                                <Input value={stateProduct.countInStock} onChange={handleChange} name='countInStock' />
+                                <Input style={{ marginTop: '5px' }} type='number' value={stateProduct.countInStock} onChange={handleChange} name='countInStock' />
                             </Form.Item>
                             <Form.Item
                                 label="Giá bán"
@@ -564,7 +600,7 @@ const AdminProduct = () => {
                                     },
                                 ]}
                             >
-                                <Input value={stateProduct.price} onChange={handleChange} name='price' />
+                                <Input type='number' value={stateProduct.price} onChange={handleChange} name='price' />
                             </Form.Item>
                             <Form.Item
                                 label="Mô tả"
@@ -576,7 +612,8 @@ const AdminProduct = () => {
                                     },
                                 ]}
                             >
-                                <Input value={stateProduct.description} onChange={handleChange} name='description' />
+                                <TextArea value={stateProduct.description} onChange={handleChange} name='description' rows={4} />
+                                {/* <Input value={stateProduct.description} onChange={handleChange} name='description' /> */}
                             </Form.Item>
                             <Form.Item
                                 label="Trạng thái"
@@ -666,25 +703,35 @@ const AdminProduct = () => {
                                 label="Loại"
 
                             >
-                                <Input value={stateProductDetail.type} onChange={handleChangeDetail} name="type" />
+                                <Select
+                                    name="type"
+                                    value={stateProductDetail?.type}
+                                    placeholder="Loại sản phẩm"
+                                    onChange={handleSelectType}
+                                    options={renderOptions(queryProductType?.data?.data)}
+                                />
+                                {selectType === 'add_type' && (
+                                    <Input value={stateProductDetail.newType} onChange={handleChangeDetail} name='type' />
+
+                                )}
                             </Form.Item>
                             <Form.Item
                                 label="Số lượng"
 
                             >
-                                <Input value={stateProductDetail.countInStock} onChange={handleChangeDetail} name='countInStock' />
+                                <Input type='number' value={stateProductDetail.countInStock} onChange={handleChangeDetail} name='countInStock' />
                             </Form.Item>
                             <Form.Item
                                 label="Giá bán"
 
                             >
-                                <Input value={stateProductDetail.price} onChange={handleChangeDetail} name='price' />
+                                <Input type='number' value={stateProductDetail.price} onChange={handleChangeDetail} name='price' />
                             </Form.Item>
                             <Form.Item
                                 label="Mô tả"
 
                             >
-                                <Input value={stateProductDetail.description} onChange={handleChangeDetail} name='description' />
+                                <TextArea value={stateProductDetail.description} onChange={handleChangeDetail} name='description' rows={4} />
                             </Form.Item>
                             <Form.Item
                                 label="Trạng thái"
@@ -722,7 +769,7 @@ const AdminProduct = () => {
                                     span: 16,
                                 }}
                             >
-                                <Button style={{ width: '130px', height: '40px', fontSize: '1.15rem', alignContent: 'center', display: 'flex', justifyContent: 'center', alignItems: 'center' }} type="primary" htmlType="submit">
+                                <Button onClick={onUpdateProduct} style={{ width: '130px', height: '40px', fontSize: '1.15rem', alignContent: 'center', display: 'flex', justifyContent: 'center', alignItems: 'center' }} type="primary" htmlType="submit">
                                     Cập Nhật
                                 </Button>
                             </Form.Item>

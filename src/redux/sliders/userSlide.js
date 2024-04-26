@@ -20,7 +20,7 @@ export const userSlide = createSlice({
   reducers: {
     updateUser: (state, action) => {
       const { _id = '', username, name = '', email = '', address = '', phone = '', gender = '', date = '', avatar = avatardefault, access_token = '', isAdmin } = action.payload
-      // console.log("action", action)
+
       state.id = _id;
       state.username = username || email;
       state.name = name;
@@ -49,6 +49,6 @@ export const userSlide = createSlice({
   }
 })
 
-export const { updateUser, resetUser } = userSlide.actions
+export const { updateUser, resetUser } = userSlide.actions;
 
-export default userSlide.reducer
+export default userSlide.reducer;

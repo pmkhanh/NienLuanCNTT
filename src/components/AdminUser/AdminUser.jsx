@@ -11,7 +11,7 @@ import ModalComponent from '../ModalComponent/ModalComponent';
 import TableComponent from '../Table/TableComponent';
 import { WrapperButton, WrapperHeader, WrapperUploadFile } from './style';
 
-const AdminProduct = () => {
+const AdminUser = () => {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [rowSelected, setRowSelected] = useState('')
     const [isPendingUpdate, setIsPendingUpdate] = useState(false)
@@ -123,20 +123,7 @@ const AdminProduct = () => {
                 setTimeout(() => searchInput.current?.select(), 100);
             }
         },
-        // render: (text) =>
-        // searchedColumn === dataIndex ? (
-        //     // <Highlighter
-        //     //     highlightStyle={{
-        //     //         backgroundColor: '#ffc069',
-        //     //         padding: 0,
-        //     //     }}
-        //     //     searchWords={[searchText]}
-        //     //     autoEscape
-        //     //     textToHighlight={text ? text.toString() : ''}
-        //     // />
-        // ) : (
-        //     text
-        // ),
+
     })
     const columns = [
         {
@@ -183,7 +170,6 @@ const AdminProduct = () => {
                 },
             ],
             onFilter: (value, record) => {
-                // console.log('value', {value, record})
                 return record.gender.indexOf(value) === 0;
             },
         },
@@ -265,7 +251,6 @@ const AdminProduct = () => {
             ...stateUser,
             avatar: file.preview
         })
-        console.log('avatar', stateUser.avatar)
     }
     useEffect(() => {
         if (isSuccess && data?.status == 'OK') {
@@ -281,23 +266,30 @@ const AdminProduct = () => {
     // Cập nhật tài khoản
     const mutationUpdate = useMutationHook(
         (data) => {
-            // console.log('data', data)
             const {
                 id,
                 token,
                 ...rests
             } = data
-            // console.log('data', data)
-            const res = UserService.updateUser(
-                id,
-                { isAdmin: true ? false : true, ...rests },
-                token,
-            )
-            return res
+            if (stateUserDetail?.isAdmin) {
+                const res = UserService.updateUser(
+                    id,
+                    { isAdmin: false, ...rests },
+                    token,
+                )
+                return res
+            }
+            else if (!stateUserDetail?.isAdmin) {
+                const res = UserService.updateUser(
+                    id,
+                    { isAdmin: true, ...rests },
+                    token,
+                )
+                return res
+            }
         }
     )
     const { data: dataUpdated, isPending: isPendingUpdated, isSuccess: isSuccessUpdated, isError: isErrorUpdated } = mutationUpdate
-
     useEffect(() => {
         if (rowSelected != null && isModalOpenUpdate) {
             setIsPendingUpdate(true)
@@ -386,6 +378,40 @@ const AdminProduct = () => {
     }, [isSuccessDeleted, isErrorDeleted])
 
 
+    // Xóa nhiều tài khoản
+    const mutationDeleteMany = useMutationHook(
+        (data) => {
+            const {
+                token,
+                ...ids
+            } = data
+            const res = UserService.deleteMany(
+                ids,
+                token
+            )
+            return res
+        },
+    )
+    const { data: dataDeleteMany, isPending: isPendingDeleteMany, isSuccess: isSuccessDeleteMany, isError: isErrorDeleteMany } = mutationDeleteMany
+
+    const handleDeleteManyUsers = (ids) => {
+        mutationDeleteMany.mutate()
+        mutationDeleteMany.mutate({ ids: ids, token: userAdmin?.access_token }, {
+            onSettled: () => {
+                queryUser.refetch()
+            }
+        })
+    }
+    useEffect(() => {
+        if (isSuccessDeleteMany && dataDeleteMany?.status === 'OK') {
+            message.success("Xóa tài khoản thành công!")
+            handleCancelDelete()
+        }
+        if (dataDeleteMany?.status === 'ERR') {
+            message.error('Có lỗi xảy ra, kiểm tra lại dữ liệu')
+        }
+    }, [isSuccessDeleteMany, isErrorDeleteMany])
+
 
     return (
         <div style={{ width: '100%' }}>
@@ -395,6 +421,7 @@ const AdminProduct = () => {
             </div>
             <div style={{ marginTop: '15px' }} >
                 <TableComponent
+                    handleDeleteMany={handleDeleteManyUsers}
                     columns={columns}
                     isPending={isPedingUser}
                     data={dataTable}
@@ -585,4 +612,4 @@ const AdminProduct = () => {
     )
 }
 
-export default AdminProduct;
+export default AdminUser;

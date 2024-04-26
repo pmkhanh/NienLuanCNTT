@@ -8,6 +8,7 @@ export const WrapperContainer = styled.div`
     border-radius: 10px;
     background-color: #FFFFFF;
     display: flex;
+    overflow: hidden;
 `
 
 export const WrapperContainerLeft = styled.div`

@@ -24,16 +24,14 @@ export const AdminPage = () => {
         {
             type: 'divider',
         },
-        getItem('Thống kê', 'reports', <LineChartOutlined />),
+   
 
     ];
     const rootSubmenuKeys = ['users', 'products', 'orders', 'reports']
     const [keySelected, setKeySelected] = useState('');
     const onClickMenu = ({ key }) => {
-        // console.log('click ', key);
         setKeySelected(key)
     }
-    // console.log('key', keySelected)
     const renderPage = (key) => {
         switch (key) {
             case '':
@@ -68,7 +66,7 @@ export const AdminPage = () => {
                     onClick={onClickMenu}
                     style={{
                         width: 256,
-                        height: '100vh',
+                        height: 'auto',
                         boxShadow: '1px 1px 2px #ccc'
 
                     }}

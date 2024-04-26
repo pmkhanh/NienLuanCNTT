@@ -11,6 +11,8 @@ import * as UserService from '../../Services/UserService'
 import { useMutationHook } from '../../hooks/UseMutation';
 import Loading from '../../components/LoadingComponent/Loading';
 import * as Messsage from '../../components/MessageComponent/MessageComponent'
+import { GoogleLogin } from '@react-oauth/google';
+import { jwtDecode } from 'jwt-decode';
 
 const SignUpPage = () => {
     const navigate = useNavigate()
@@ -21,7 +23,11 @@ const SignUpPage = () => {
     const mutation = useMutationHook(
         data => UserService.signUpUser(data)
     )
+    const mutationGG = useMutationHook(
+        data=> UserService.signUpUser(data)
+    )
     const { data, isPending, isSuccess, isError } = mutation
+    const { dataGG, isPendingGG, isSuccessGG, isErrorGG } = mutationGG
     const handleSignUp = () => {
         mutation.mutate({
             username,
@@ -40,7 +46,15 @@ const SignUpPage = () => {
         }
 
     }, [isSuccess, isError])
-    console.log("mutation", mutation)
+    useEffect(() => {
+        if(isSuccessGG && dataGG?.status==='OK'){
+            message.success('Đăng nhập với Google thành công')
+            // signIn()
+        }
+        else if(isErrorGG && dataGG?.status==='ERR'){
+            message.error('Có lỗi xảy ra, thử đăng ký lại sau')
+        }
+    },[isSuccessGG, isErrorGG])
     const [username, setUsername] = useState('')
     const [phone, setPhone] = useState('')
     const [password, setPassword] = useState('')
@@ -171,10 +185,21 @@ const SignUpPage = () => {
                                 <img width={'33px'} height={'33px'} src={logfb} alt="Logo Facebook" />
                                 <span> Facebook</span>
                             </WrapperLogo>
-                            <WrapperLogo>
-                                <img width={'23px'} height={'23px'} src={logogg} alt="Logo Google" />
-                                <span> Google</span>
-                            </WrapperLogo>
+                            <GoogleLogin
+                               onSuccess={credentialResponse => {
+                                // message.success("Đăng kí thành công!")
+                                const decoded = jwtDecode(credentialResponse?.credential);
+                                console.log(decoded);
+                                mutationGG.mutate({
+                                    email: decoded?.email,
+                                    name: decoded?.name,
+                                    avatar: decoded?.picture
+                                })
+                            }}
+                            onError={() => {
+                                console.log('Login Failed');
+                            }}
+                            />
                         </div>
                         <div style={{ display: 'flex', justifyContent: 'center', marginTop: '30px', color: '#ccc' }} >
                             <span>
